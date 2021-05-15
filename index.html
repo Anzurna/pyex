@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Binary Game</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+<!-- <div class="bg_image"></div> -->
+  <div class="main_panel" id="main">
+    <div id="calc_panel">
+      <div class="row">
+        <button class="menu_button" type="button" id="binary_tasks_start">binary</button> 
+        <button class="menu_button" type="button" id="exercises_button">x86</button>
+      </div>
+      <div class="row">
+        <div class="hex_numbers">
+          <p class="hint">&nbsp2</p>
+          <button data-val="17" class="bit_button hidden" type="button" id="oct_addit_1">0</button>
+          <button data-val="16" class="bit_button hidden" type="button" id="oct_addit_2">0</button>
+          <button data-val="15" class="bit_button" type="button">0</button>  
+          <p class="oct_label_hidden">.</p>
+          <button data-val="14" class="bit_button" type="button">0</button>
+          <button data-val="13" class="bit_button" type="button">0</button>         
+          <button data-val="12" class="bit_button" type="button">0</button>
+          <p class="hex_label_hidden">.</p>
+          <p class="oct_label_hidden">.</p>
+          <button data-val="11" class="bit_button" type="button">0</button>
+          <button data-val="10" class="bit_button" type="button">0</button>
+          <button data-val="9" class="bit_button" type="button">0</button>
+          <p class="oct_label_hidden">.</p>
+          <button data-val="8" class="bit_button" type="button">0</button>
+          <p class="hex_label_hidden">.</p>
+          <button data-val="7" class="bit_button" type="button">0</button>
+          <button data-val="6" class="bit_button" type="button">0</button>
+          <p class="oct_label_hidden">.</p>
+          <button data-val="5" class="bit_button" type="button">0</button>
+          <button data-val="4" class="bit_button" type="button">0</button>
+          <p class="hex_label_hidden">.</p>
+          <button data-val="3" class="bit_button" type="button">0</button>
+          <p class="oct_label_hidden">.</p>
+          <button data-val="2" class="bit_button" type="button">0</button>
+          <button data-val="1" class="bit_button" type="button">0</button>
+          <button data-val="0" class="bit_button" type="button">0</button>
+          
+        </div>
+      </div>
+      <div class="row">
+        
+        <div class="hex_numbers">
+          <p class="hint">&nbsp8</p>
+          <!-- <p class="oct_label" id="ol_0">0</p> -->
+          <input type="number" class="hex_label" id="ol_0" value=0  name="fme">
+        </div>
+      </div>
+
+      <div class="row">     
+        <div class="hex_numbers">
+          <p class="hint">16</p>
+          <!-- <p class="hex_label" id="hl_0">0</p> -->
+          <input type="text" class="hex_label"  id="hl_0" value=0 step=1 name="fname">
+
+        </div>
+      </div>
+      <div class="row">
+        
+        <div class="hex_numbers">
+          <p class="hint">10</p>
+          <!-- <p class="oct_label" id="result">0</p> -->
+          <input type="number" class="hex_label" id="result" value=0 step=1 name="fame">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <a href='https://www.freepik.com/vectors/technology'>Technology vector created by gstudioimagen - www.freepik.com</a> -->
+    
+  </body>
+  <script src="game_script.js"></script>
+</html>
