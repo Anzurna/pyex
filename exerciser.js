@@ -1,19 +1,7 @@
-var scale_of_notation_types = [2, 8, 16, 10];
-var bin_information_from = {
-    2: "двоичной",
-    8: "восьмеричной",
-    10: "десятичной",
-    16: "шестнадцатеричной"
-};
-var bin_information_to = {
-    2: "двоичную",
-    8: "восьмеричную",
-    10: "десятичную",
-    16: "шестнадцатеричную"
-};
 var task_1_fiz_address;
 var task_1_stack_address;
 var typeOfSession;
+const orig_string_len = 40;
 function GetId(id) {
     return document.getElementById(id);
 }
@@ -21,9 +9,20 @@ var byte_str = "0000000000000000";
 function GetNumValue(id) {
     return Number(document.getElementById(id).innerHTML);
 }
+function toggleBetweenClasses(items, firstClass, secondClass) {
+    for (var i = 0; i < items.length; i++) {
+        items.item(i).classList.toggle(firstClass, true);
+        items.item(i).classList.toggle(secondClass, false);
+    }
+}
+function toggleElementBetweenClasses(element, firstClass, secondClass) {
+    element.classList.toggle(firstClass, true);
+    element.classList.toggle(secondClass, false);
+}
 window.onload = function () {
-    addCalculatorListeners();
     addMenuListeners();
+    formOriginalString();
+    addSliceTrainerListeners();
     var elements = document.getElementsByClassName("bit_button");
     for (var i = 0; i < elements.length; i++) {
         elements[i].addEventListener('click', function () {
@@ -31,35 +30,96 @@ window.onload = function () {
         });
     }
 };
-function toggleBetweenClasses(items, firstClass, secondClass) {
-    for (var i = 0; i < items.length; i++) {
-        items.item(i).classList.toggle(firstClass, true);
-        items.item(i).classList.toggle(secondClass, false);
-    }
+function addSliceTrainerListeners() {
+    let slice_field = GetId("slice_values");
+    let result_field = GetId("slice_result");
+    result_field.innerHTML = (`Slice result: be or n`);
+    let result_string;
+    let string_elements = [];
+    slice_field.addEventListener("input", function (event) {
+        result_string = "";
+        let slice_args = slice_field.value.split(":");
+        let num_of_colons = slice_args.length - 1;
+        for (let element_id of string_elements) {
+            toggleElementBetweenClasses(GetId(element_id), "label_2", "label_2_highlighted");
+        }
+        string_elements = getSlice("orig_string_", slice_args, num_of_colons);
+        if (string_elements != undefined) {
+            result_string = getStringFromElements(string_elements);
+            for (let element_id of string_elements) {
+                toggleElementBetweenClasses(GetId(element_id), "label_2_highlighted", "label_2");
+            }
+        }
+        result_field.innerHTML = (`Slice result: ${result_string}`);
+    }, false);
 }
-function addCalculatorListeners() {
-    var input8 = GetId("ol_0");
-    input8.addEventListener("mouseenter", function (event) {
-        GetId("oct_addit_1").classList.remove("hidden");
-        GetId("oct_addit_2").classList.remove("hidden");
-        var hidden_octal_separators = document.querySelectorAll(".oct_label_hidden");
-        toggleBetweenClasses(hidden_octal_separators, "label_1", "oct_label_hidden");
-    }, false);
-    input8.addEventListener("mouseleave", function (event) {
-        GetId("oct_addit_1").classList.add("hidden");
-        GetId("oct_addit_2").classList.add("hidden");
-        var octal_separators = document.querySelectorAll(".label_1");
-        toggleBetweenClasses(octal_separators, "oct_label_hidden", "label_1");
-    }, false);
-    var input16 = GetId("hl_0");
-    input16.addEventListener("mouseenter", function (event) {
-        var hidden_hex_separators = document.querySelectorAll(".hex_label_hidden");
-        toggleBetweenClasses(hidden_hex_separators, "label_1", "hex_label_hidden");
-    }, false);
-    input16.addEventListener("mouseleave", function (event) {
-        var hex_separators = document.querySelectorAll(".label_1");
-        toggleBetweenClasses(hex_separators, "hex_label_hidden", "label_1");
-    }, false);
+function getSlice(id, args, num_of_colons) {
+    let result_arr = [];
+    let left_border;
+    let right_border;
+    let step;
+    if (num_of_colons >= 0) {
+        if (args[0].replace(/ /g, '') == "") {
+            left_border = 0;
+        }
+        else if (isNaN(parseInt(args[0]))) {
+            left_border = 0;
+        }
+        else {
+            left_border = parseInt(args[0]);
+            if (left_border < 0) {
+                left_border = orig_string_len + left_border;
+            }
+        }
+    }
+    if (num_of_colons >= 1) {
+        if (+args[1] > orig_string_len) {
+            right_border = orig_string_len;
+        }
+        else if (args[1].replace(/ /g, '') == "") {
+            right_border = orig_string_len;
+        }
+        else if (isNaN(parseInt(args[1]))) {
+            right_border = orig_string_len;
+        }
+        else {
+            right_border = parseInt(args[1]);
+            if (right_border < 0) {
+                right_border = orig_string_len + right_border;
+            }
+        }
+    }
+    if (num_of_colons == 2) {
+        step = +args[2];
+    }
+    if (num_of_colons == 0) {
+        result_arr.push(`${id}${left_border}`);
+    }
+    else if (num_of_colons == 1) {
+        if (left_border < right_border) {
+            for (let letter_number = left_border; letter_number < right_border; letter_number++) {
+                result_arr.push(`${id}${letter_number}`);
+            }
+        }
+        else {
+            for (let letter_number = right_border; letter_number < left_border; letter_number++) {
+                result_arr.push(`${id}${letter_number}`);
+            }
+        }
+    }
+    return result_arr;
+}
+function getStringFromElements(string_elements) {
+    let result = "";
+    for (let element = 0; element < string_elements.length; element++) {
+        result += GetId(`${string_elements[element]}`).innerHTML;
+    }
+    if (result == undefined)
+        return "";
+    else
+        return result;
+}
+function toggleHighlight(items) {
 }
 function FlipBit(button) {
     var byte_arr = [];
@@ -82,14 +142,8 @@ function FlipBit(button) {
 }
 function addMenuListeners() {
     var calc_panel = document.getElementById("calc_panel");
-    var x86_button = GetId("exercises_button");
-    x86_button.onclick = function () {
-        fade(calc_panel, removeElement("calc_panel"));
-        x86_button.remove();
-        startSession("x86");
-    };
-    var binary_excercises_button = GetId("binary_tasks_start");
-    binary_excercises_button.onclick = function () {
+    var python_excercises_button = GetId("python_tasks_start");
+    python_excercises_button.onclick = function () {
         fade(calc_panel, removeElement("calc_panel"));
         // startSession("binary");
         var task_panel = document.createElement("div");
@@ -98,6 +152,25 @@ function addMenuListeners() {
         fadeIn(task_panel);
         loadBinaryMenu();
     };
+}
+function formOriginalString() {
+    let original = GetId("original_string");
+    let str = 'To be or not to be, that is the question';
+    let start = `<p class="label_2">original =&nbsp</p>`;
+    let quotation = `<p class="label_2">"</p>`;
+    original.insertAdjacentHTML("beforeend", start);
+    original.insertAdjacentHTML("beforeend", quotation);
+    for (let i = 0; i < str.length; i++) {
+        if (str[i] == " ") {
+            let element = `<p class="label_2" id="orig_string_${i}">&nbsp</p>`;
+            original.insertAdjacentHTML("beforeend", element);
+        }
+        else {
+            let element = `<p class="label_2" id="orig_string_${i}">${str[i]}</p>`;
+            original.insertAdjacentHTML("beforeend", element);
+        }
+    }
+    original.insertAdjacentHTML("beforeend", quotation);
 }
 const blocked_tasks = new Set();
 function loadBinaryMenu() {
@@ -247,43 +320,41 @@ function loadBinaryTask_1() {
         }
     };
 }
-function loadBinaryTask_2() {
-    let task_2_type = Math.floor(Math.random() * 2);
-    let operand_1_scale = 10;
-    let operand_2_scale = 10;
-    while (operand_1_scale == 10 && operand_1_scale == 10) {
-        operand_1_scale = scale_of_notation_types[Math.floor(Math.random() * 4)];
-        operand_2_scale = scale_of_notation_types[Math.floor(Math.random() * 4)];
-    }
-    let result_scale = scale_of_notation_types[Math.floor(Math.random() * 4)];
-    let operand_1 = Math.floor(Math.random() * 4096);
-    let operand_2 = Math.floor(Math.random() * 4096);
-    let operand_1_str = transform(operand_1, operand_1_scale);
-    let operand_2_str = transform(operand_2, operand_2_scale);
-    let result;
-    if (task_2_type == 0) {
-        createTextRow(`Сложите числа.`);
-        result = operand_1 + operand_2;
-    }
-    else if (task_2_type == 1) {
-        createTextRow(`Вычтите второе число из первого. Результат может быть отрицательным.`);
-        result = operand_1 - operand_2;
-    }
-    let result_str = transform(result, result_scale);
-    addHintedRow(operand_1_scale.toString(), operand_1_str);
-    addHintedRow(operand_2_scale.toString(), operand_2_str);
-    addHintedRowWithInputAndButton(result_scale.toString(), "bin_task_button", "bin_task_input");
-    console.log(result_str);
-    GetId("bin_task_button").onclick = function () {
-        if (GetId("bin_task_input").value == result_str) {
-            GetId("bin_task_input").className = "input_element_correct";
-            finishTask();
-        }
-        else {
-            GetId("bin_task_input").className = "input_element_incorrect";
-        }
-    };
-}
+// function loadBinaryTask_2() {
+//     let task_2_type = Math.floor(Math.random() * 2);
+//     let operand_1_scale : number = 10;
+//     let operand_2_scale : number = 10;
+//     while (operand_1_scale == 10 && operand_1_scale == 10) {
+//         operand_1_scale = scale_of_notation_types[Math.floor(Math.random() * 4)];
+//         operand_2_scale= scale_of_notation_types[Math.floor(Math.random() * 4)];
+//     }
+//     let result_scale = scale_of_notation_types[Math.floor(Math.random() * 4)];
+//     let operand_1 = Math.floor(Math.random() * 4096);
+//     let operand_2 = Math.floor(Math.random() * 4096);
+//     let operand_1_str = transform(operand_1, operand_1_scale);
+//     let operand_2_str = transform(operand_2, operand_2_scale);
+//     let result : number;
+//     if (task_2_type == 0) {
+//         createTextRow(`Сложите числа.`);
+//         result = operand_1 + operand_2;
+//     } else if (task_2_type == 1) {
+//         createTextRow(`Вычтите второе число из первого. Результат может быть отрицательным.`);
+//         result = operand_1 - operand_2;
+//     }
+//     let result_str = transform(result, result_scale);
+//     addHintedRow(operand_1_scale.toString(), operand_1_str);
+//     addHintedRow(operand_2_scale.toString(), operand_2_str);
+//     addHintedRowWithInputAndButton(result_scale.toString(), "bin_task_button", "bin_task_input");
+//     console.log(result_str);
+//     GetId("bin_task_button").onclick = function() { 
+//         if (GetId("bin_task_input").value == result_str) {            
+//             GetId("bin_task_input").className = "input_element_correct";
+//             finishTask()
+//         } else {
+//             GetId("bin_task_input").className = "input_element_incorrect";
+//         }
+//     }
+// }
 function loadNetTask_1() {
     let net_task_1_type = Math.floor(Math.random() * 2);
     let net_ip = [0, 0, 0, 0];
