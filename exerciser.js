@@ -20,7 +20,7 @@ function toggleElementBetweenClasses(element, firstClass, secondClass) {
     element.classList.toggle(secondClass, false);
 }
 window.onload = function () {
-    addMenuListeners();
+    //addMenuListeners()
     formOriginalString();
     addSliceTrainerListeners();
     var elements = document.getElementsByClassName("bit_button");

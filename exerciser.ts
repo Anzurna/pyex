@@ -27,7 +27,7 @@ function toggleElementBetweenClasses(element, firstClass : string, secondClass :
 }
 
 window.onload = function() {
-    addMenuListeners()
+    //addMenuListeners()
     formOriginalString()
     addSliceTrainerListeners()
     var elements = document.getElementsByClassName("bit_button");
