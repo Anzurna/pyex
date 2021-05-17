@@ -76,7 +76,11 @@ function getSlice(id : string, args : string[], num_of_colons : number) {
     let left_border : number;
     let right_border : number;
     let step : number;
-    
+    let is_left_border_negative;
+    let is_right_border_negative;
+    if (num_of_colons == 0 && args[0].replace(/ /g,'') == "") {
+        return []
+    }
     if (num_of_colons >= 0) {
         if (args[0].replace(/ /g,'') == "") {
             left_border = 0;
@@ -86,10 +90,15 @@ function getSlice(id : string, args : string[], num_of_colons : number) {
             left_border = parseInt(args[0]);
             if (left_border < 0) {
                 left_border = orig_string_len + left_border;
+                is_left_border_negative = true;
+            } else {
+                is_left_border_negative = false;
+            }
+            if (left_border > orig_string_len) {
+                return []
             }
         }
     }
-
     if (num_of_colons >= 1) {
         if (+args[1] > orig_string_len) {
             right_border = orig_string_len;
@@ -101,27 +110,68 @@ function getSlice(id : string, args : string[], num_of_colons : number) {
             right_border = parseInt(args[1]);
             if (right_border < 0) {
                 right_border = orig_string_len + right_border;
+                is_right_border_negative = true;
+            } else {
+                is_right_border_negative = false;
             }
-        }
-        
+        }       
     } 
-    if (num_of_colons == 2) {
-        step = +args[2]
-    }
 
+    if (num_of_colons == 2) {
+        if (args[2].replace(/ /g,'') == "") {
+            step = 1;
+        } else if (isNaN(parseInt(args[2])) || parseInt(args[2]) == 0){
+            step = 1;
+        } else {
+            step = parseInt(args[2]);
+        }      
+    }
+    console.log(step)
+    //Picking letters
     if (num_of_colons == 0) {
         result_arr.push(`${id}${left_border}`);
+
     } else if (num_of_colons == 1) {
         if (left_border < right_border) {
             for (let letter_number = left_border; letter_number < right_border; letter_number++) {
                 result_arr.push(`${id}${letter_number}`)  
-            }          
+             } 
+         }         
+        // } else {
+        //     for (let letter_number = right_border; letter_number < left_border; letter_number++) {
+        //         result_arr.push(`${id}${letter_number}`)  
+        //     } 
+        // }      
+    } else if (num_of_colons == 2) {
+        if (step > 0) {
+            if (left_border < right_border) {
+                for (let letter_number = left_border; letter_number < right_border; letter_number += step) {
+                    result_arr.push(`${id}${letter_number}`)                 
+                }
+            }
+        } else if (step < 0) {
+            let temp;
+
+            // temp = right_border;
+            // right_border = left_border;
+            // left_border = temp;
+            if (!(((!is_left_border_negative && !is_right_border_negative) && (left_border < right_border)) || 
+                (!is_left_border_negative && is_right_border_negative))) {
+                if (left_border < right_border) {
+                    for (let letter_number = right_border; letter_number > left_border; letter_number +=step) {
+                        result_arr.push(`${id}${letter_number}`)  
+                    }
+                } else {
+                    for (let letter_number = left_border; letter_number > right_border; letter_number +=step) {
+                        result_arr.push(`${id}${letter_number}`)  
+                    }
+                }
+            }
+            
         } else {
-            for (let letter_number = right_border; letter_number < left_border; letter_number++) {
-                result_arr.push(`${id}${letter_number}`)  
-            } 
+            result_arr = []
+
         }
-        
     }
     return result_arr;
 }
