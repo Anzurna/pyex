@@ -302,7 +302,7 @@ function selectPythonTask() {
                     loadPythonDataTypeTask();
                     break;
                 case "1":
-                    loadPythonDataTypeTask();
+                    loadPythonCodeResultTask();
                     break;
             }
             break;
@@ -399,6 +399,60 @@ function isOperationCorrect(first_op, second_op, types_array, compat_types) {
     else {
         return "incorrect";
     }
+}
+function loadPythonCodeResultTask() {
+    loadPCDT_1();
+}
+function loadPCDT_1() {
+    let first_var = getRandomNumber(150) + 70;
+    let random_conditional_1 = getRandomNumber(70);
+    let random_conditional_2 = getRandomNumber(3);
+    let random_conditional_3 = getRandomNumber(15);
+    let random_sub_1 = getRandomNumber(7) + 1;
+    let random_sub_2 = getRandomNumber(4) + 1;
+    let random_add_1 = getRandomNumber(3) + 1;
+    createTextRow(`Что выведет этот код?`);
+    createTextRow(`(Если ответов несколько - вводите их через запятую)`);
+    createTextRow(`i = ${first_var}<br> 
+    k = ${random_conditional_1}<br> 
+    while i > ${random_conditional_3}:<br>
+    &nbsp&nbsp&nbsp&nbspif i == k:<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspbreak<br>
+    &nbsp&nbsp&nbsp&nbspelif i % 2 == ${random_conditional_2}:<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspi -= ${random_sub_1}<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspk += ${random_add_1}<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspcontinue<br>
+    &nbsp&nbsp&nbsp&nbspi -= ${random_sub_2}<br>
+    else:<br>
+    &nbsp&nbsp&nbsp&nbspprint("Finish")<br>
+    print(i)`);
+    let result = "";
+    while (first_var > random_conditional_3) {
+        if (first_var == random_conditional_1) {
+            break;
+        }
+        else if (first_var % 2 == random_conditional_2) {
+            first_var -= random_sub_1;
+            random_conditional_1 += random_add_1;
+            continue;
+        }
+        first_var -= random_sub_2;
+    }
+    if (first_var <= 0) {
+        result = "Finish,";
+    }
+    result += first_var.toString();
+    console.log(result);
+    addHintedRowWithInputAndButton("Ответ", "python_code_result_task_button", "python_code_result_input");
+    GetId("python_code_result_task_button").onclick = function () {
+        if (GetId("python_code_result_input").value == result.replace(/\s/g, '')) {
+            GetId("python_code_result_input").className = "input_element_correct";
+            finishTask();
+        }
+        else {
+            GetId("python_code_result_input").className = "input_element_incorrect";
+        }
+    };
 }
 function loadShiftTask_1() {
     let direction_select = getRandomNumber(2);
