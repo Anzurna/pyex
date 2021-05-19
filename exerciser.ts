@@ -27,17 +27,28 @@ function toggleElementBetweenClasses(element, firstClass : string, secondClass :
 }
 
 window.onload = function() {
-    //addMenuListeners()
-    formOriginalString()
-    addSliceTrainerListeners()
-    var elements = document.getElementsByClassName("bit_button");
 
-    for (var i = 0; i < elements.length; i++) {
-        elements[i].addEventListener('click', function() {
-        FlipBit(this); //Here you will need to use the param.
-        });
-    }
-   
+    addMenuListeners()
+    if (document.title == "Python exerciser") {
+        //Slicer
+        formOriginalString()
+        addSliceTrainerListeners()
+
+    } 
+    if (document.title == "Nested") {
+        let elements = document.getElementsByClassName("nested_label");
+
+
+        for (let element = 0; element < elements.length; element++) {
+            elements[element].addEventListener("mouseenter", function( event ) {
+            GetId("nested_result").innerHTML =  elements[element].getAttribute("name");
+            }, false);
+
+            elements[element].addEventListener("mouseleave", function( event ) {
+                GetId("nested_result").innerHTML = "&nbsp";
+            }, false);
+        }
+    } 
 }
 
 function addSliceTrainerListeners() {
@@ -219,6 +230,7 @@ function addMenuListeners() {
     var calc_panel = document.getElementById("calc_panel");
 
     var python_excercises_button = GetId("python_tasks_start");
+    
     python_excercises_button.onclick = function() {
         fade(calc_panel, removeElement("calc_panel"));
 
@@ -230,6 +242,26 @@ function addMenuListeners() {
             fadeIn(task_panel);
             loadBinaryMenu()
     }
+
+    // let nested_interactive_button = GetId("python_nested_interactive");
+    // nested_interactive_button.onclick = function() {
+    //     fade(calc_panel, removeElement("calc_panel"));
+
+    //     calc_panel = document.createElement("div");
+    //     calc_panel.id = "calc_panel";
+    //     createNestedInteractive("calc_panel")
+    // } 
+}
+
+function createNestedInteractive(id : string) {
+    var xhr= new XMLHttpRequest();
+    xhr.open('GET', 'nested.html', true);
+    xhr.onreadystatechange= function() {
+        if (this.readyState!==4) return;
+        if (this.status!==200) return; // or whatever error handling you want
+        document.getElementById('main_panel').innerHTML= this.responseText;
+    };
+xhr.send();
 }
 
 function formOriginalString() {
