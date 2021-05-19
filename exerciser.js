@@ -1,7 +1,8 @@
 var task_1_fiz_address;
 var task_1_stack_address;
 var typeOfSession;
-const orig_string_len = 40;
+const ORIG_STRING_LEN = 40;
+const PYTHON_SESSION_NAME = "python";
 function GetId(id) {
     return document.getElementById(id);
 }
@@ -81,31 +82,31 @@ function getSlice(id, args, num_of_colons) {
         else {
             left_border = parseInt(args[0]);
             if (left_border < 0) {
-                left_border = orig_string_len + left_border;
+                left_border = ORIG_STRING_LEN + left_border;
                 is_left_border_negative = true;
             }
             else {
                 is_left_border_negative = false;
             }
-            if (left_border > orig_string_len) {
+            if (left_border > ORIG_STRING_LEN) {
                 return [];
             }
         }
     }
     if (num_of_colons >= 1) {
-        if (+args[1] > orig_string_len) {
-            right_border = orig_string_len;
+        if (+args[1] > ORIG_STRING_LEN) {
+            right_border = ORIG_STRING_LEN;
         }
         else if (args[1].replace(/ /g, '') == "") {
-            right_border = orig_string_len;
+            right_border = ORIG_STRING_LEN;
         }
         else if (isNaN(parseInt(args[1]))) {
-            right_border = orig_string_len;
+            right_border = ORIG_STRING_LEN;
         }
         else {
             right_border = parseInt(args[1]);
             if (right_border < 0) {
-                right_border = orig_string_len + right_border;
+                right_border = ORIG_STRING_LEN + right_border;
                 is_right_border_negative = true;
             }
             else {
@@ -215,7 +216,7 @@ function addMenuListeners() {
         task_panel.id = "task_panel";
         GetId("main").append(task_panel);
         fadeIn(task_panel);
-        loadBinaryMenu();
+        loadPythonTasksMenu();
     };
     // let nested_interactive_button = GetId("python_nested_interactive");
     // nested_interactive_button.onclick = function() {
@@ -224,18 +225,6 @@ function addMenuListeners() {
     //     calc_panel.id = "calc_panel";
     //     createNestedInteractive("calc_panel")
     // } 
-}
-function createNestedInteractive(id) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'nested.html', true);
-    xhr.onreadystatechange = function () {
-        if (this.readyState !== 4)
-            return;
-        if (this.status !== 200)
-            return; // or whatever error handling you want
-        document.getElementById('main_panel').innerHTML = this.responseText;
-    };
-    xhr.send();
 }
 function formOriginalString() {
     let original = GetId("original_string");
@@ -256,33 +245,31 @@ function formOriginalString() {
     }
     original.insertAdjacentHTML("beforeend", quotation);
 }
-const blocked_tasks = new Set();
-function loadBinaryMenu() {
-    let number_of_tasks = 4;
+const BLOCKED_TASKS = new Set();
+const NUMBER_OF_PYTHON_TASKS = 2;
+function loadPythonTasksMenu() {
     createTextRow(`Выберите типы задач.`);
-    addCheckboxRow("12", "Перевод из одной системы счисления в другую");
-    addCheckboxRow("12", "Недесятичная арифметика");
-    addCheckboxRow("12", "Задачи с IP адресами");
-    addCheckboxRow("12", "Логический сдвиг");
+    addCheckboxRow("1", "Типы данных");
+    addCheckboxRow("2", "Результат выполнения кода");
     let elements = document.getElementsByClassName("menu_checkbox");
     for (let i = 0; i < elements.length; i++) {
         elements[i].value = i;
         elements[i].addEventListener('change', function () {
-            if (blocked_tasks.has(this.value)) {
-                blocked_tasks.delete(this.value);
+            if (BLOCKED_TASKS.has(this.value)) {
+                BLOCKED_TASKS.delete(this.value);
             }
             else {
-                blocked_tasks.add(this.value);
+                BLOCKED_TASKS.add(this.value);
             }
         });
     }
-    addRowWithButton("start_binary_session", "Начать");
-    GetId("start_binary_session").onclick = function () {
-        if (blocked_tasks.size < number_of_tasks) {
+    addRowWithButton("start_python_tasks_session", "Начать");
+    GetId("start_python_tasks_session").onclick = function () {
+        if (BLOCKED_TASKS.size < NUMBER_OF_PYTHON_TASKS) {
             var task_panel = GetId("task_panel");
             setTimeout(() => fade1(task_panel), 500);
             setTimeout(() => removeElement("task_panel"), 1000);
-            setTimeout(() => startSession("binary"), 1000);
+            setTimeout(() => startSession("python"), 1000);
         }
     };
 }
@@ -291,38 +278,34 @@ function startSession(_typeOfSession) {
     typeOfSession = _typeOfSession;
     loadNextTask();
 }
-function loadNextTask() {
+function createTaskPanel() {
     var task_panel = document.createElement("div");
     task_panel.id = "task_panel";
     GetId("main").append(task_panel);
     fadeIn(task_panel);
-    if (typeOfSession == "x86") {
-        loadTask1();
+}
+function loadNextTask() {
+    createTaskPanel();
+    if (typeOfSession == "python") {
+        selectPythonTask();
     }
-    if (typeOfSession == "binary") {
-        while (true) {
-            let task_selector = (Math.floor(Math.random() * 4)).toString();
-            if (blocked_tasks.has(task_selector)) {
-                continue;
+}
+function selectPythonTask() {
+    while (true) {
+        let task_selector = (Math.floor(Math.random() * NUMBER_OF_PYTHON_TASKS)).toString();
+        if (BLOCKED_TASKS.has(task_selector)) {
+            continue;
+        }
+        else {
+            switch (task_selector) {
+                case "0":
+                    loadPythonDataTypeTask();
+                    break;
+                case "1":
+                    loadPythonDataTypeTask();
+                    break;
             }
-            else {
-                console.log(task_selector);
-                switch (task_selector) {
-                    case "0":
-                        loadBinaryTask_1();
-                        break;
-                    case "1":
-                        loadBinaryTask_2();
-                        break;
-                    case "2":
-                        loadNetTask_1();
-                        break;
-                    case "3":
-                        loadShiftTask_1();
-                        break;
-                }
-                break;
-            }
+            break;
         }
     }
 }
@@ -340,6 +323,82 @@ function removeElement(el) {
 }
 function getRandomNumber(range) {
     return (Math.floor(Math.random() * range));
+}
+function loadPythonDataTypeTask() {
+    const NUMBER_OF_SIGNS = 2; // Addition and multiplication
+    let rand_int = (Math.floor(Math.random() * 200));
+    let rand_float = Math.random() * 200;
+    let types = [{ "type_name": "integer", "value": rand_int },
+        { "type_name": "string", "value": '"In vino veritas"' },
+        { "type_name": "list", "value": "[10, 34, 17]" },
+        { "type_name": "dict", "value": '{"destination": "Paris", "speed":250}' },
+        { "type_name": "float", "value": rand_float },
+        { "type_name": "tuple", "value": "(45, 92, 129)" }];
+    let compatible_types_addition = { "integer": ["float", "integer"],
+        "string": ["string"],
+        "list": ["list"],
+        "dict": ["none"],
+        "tuple": ["tuple"],
+        "float": ["integer", "float"]
+    };
+    let compatible_types_mul = { "integer": ["float", "integer", "string"],
+        "string": ["integer"],
+        "list": ["integer"],
+        "dict": ["none"],
+        "tuple": ["integer"],
+        "float": ["integer", "float"]
+    };
+    let sign_selector = (Math.floor(Math.random() * 2));
+    let first_op_num = (Math.floor(Math.random() * types.length));
+    let second_op_num = (Math.floor(Math.random() * types.length));
+    let first_op_value = types[first_op_num]["value"];
+    let second_op_value = types[second_op_num]["value"];
+    let result;
+    let sign;
+    if (sign_selector == 0) {
+        result = isOperationCorrect(first_op_num, second_op_num, types, compatible_types_addition);
+        sign = "+";
+    }
+    else if (sign_selector == 1) {
+        result = isOperationCorrect(first_op_num, second_op_num, types, compatible_types_mul);
+        sign = "*";
+    }
+    createTextRow(`Допустима ли операция: `);
+    createTextRow(`${first_op_value} ${sign} ${second_op_value}`);
+    addRowWithRadioButtons("rb_1", "Да", "rb_2", "Нет", "python_type_task_button");
+    GetId("rb_1").addEventListener("change", function () {
+        if (GetId("rb_2").checked) {
+            GetId("rb_2").checked = false;
+        }
+    });
+    GetId("rb_2").addEventListener("change", function () {
+        if (GetId("rb_1").checked) {
+            GetId("rb_1").checked = false;
+        }
+    });
+    GetId("python_type_task_button").onclick = function () {
+        if (GetId("rb_1").checked && (GetId("rb_1").name == result)) {
+            GetId("python_type_task_button").className = "menu_button_correct";
+            finishTask();
+        }
+        else if (GetId("rb_2").checked && (GetId("rb_2").name == result)) {
+            GetId("python_type_task_button").className = "menu_button_correct";
+            finishTask();
+        }
+        else {
+            GetId("python_type_task_button").className = "menu_button_incorrect";
+        }
+    };
+}
+function isOperationCorrect(first_op, second_op, types_array, compat_types) {
+    let first_op_type = types_array[first_op]["type_name"];
+    let second_op_type = types_array[second_op]["type_name"];
+    if (compat_types[first_op_type].includes(second_op_type)) {
+        return "correct";
+    }
+    else {
+        return "incorrect";
+    }
 }
 function loadShiftTask_1() {
     let direction_select = getRandomNumber(2);
@@ -404,41 +463,6 @@ function loadBinaryTask_1() {
         }
     };
 }
-// function loadBinaryTask_2() {
-//     let task_2_type = Math.floor(Math.random() * 2);
-//     let operand_1_scale : number = 10;
-//     let operand_2_scale : number = 10;
-//     while (operand_1_scale == 10 && operand_1_scale == 10) {
-//         operand_1_scale = scale_of_notation_types[Math.floor(Math.random() * 4)];
-//         operand_2_scale= scale_of_notation_types[Math.floor(Math.random() * 4)];
-//     }
-//     let result_scale = scale_of_notation_types[Math.floor(Math.random() * 4)];
-//     let operand_1 = Math.floor(Math.random() * 4096);
-//     let operand_2 = Math.floor(Math.random() * 4096);
-//     let operand_1_str = transform(operand_1, operand_1_scale);
-//     let operand_2_str = transform(operand_2, operand_2_scale);
-//     let result : number;
-//     if (task_2_type == 0) {
-//         createTextRow(`Сложите числа.`);
-//         result = operand_1 + operand_2;
-//     } else if (task_2_type == 1) {
-//         createTextRow(`Вычтите второе число из первого. Результат может быть отрицательным.`);
-//         result = operand_1 - operand_2;
-//     }
-//     let result_str = transform(result, result_scale);
-//     addHintedRow(operand_1_scale.toString(), operand_1_str);
-//     addHintedRow(operand_2_scale.toString(), operand_2_str);
-//     addHintedRowWithInputAndButton(result_scale.toString(), "bin_task_button", "bin_task_input");
-//     console.log(result_str);
-//     GetId("bin_task_button").onclick = function() { 
-//         if (GetId("bin_task_input").value == result_str) {            
-//             GetId("bin_task_input").className = "input_element_correct";
-//             finishTask()
-//         } else {
-//             GetId("bin_task_input").className = "input_element_incorrect";
-//         }
-//     }
-// }
 function loadNetTask_1() {
     let net_task_1_type = Math.floor(Math.random() * 2);
     let net_ip = [0, 0, 0, 0];
@@ -506,6 +530,20 @@ function addHintedRowWithInputAndButton(hint, button_id, input_id) {
                         <div class="hex_numbers">
                             <p class="hint">${hint}</p>
                             <input class="input_element" id="${input_id}" type="text" placeholder="0">
+                            <button class="menu_button" id="${button_id}" type="button">Проверить</button>
+                        </div>
+                    </div>`;
+    GetId("task_panel").insertAdjacentHTML("beforeend", element);
+}
+function addRowWithRadioButtons(rb_1_id, rb_1_text, rb_2_id, rb_2_text, button_id) {
+    var element = `<div class="row">
+                        <div class="hex_numbers">
+                            <input type="radio" id="${rb_1_id}"
+                            name="correct" value="correct">
+                            <label class="label_2" for="${rb_1_id}">${rb_1_text}</label>
+                            <input type="radio" id="${rb_2_id}"
+                            name="incorrect" value="incorrect">
+                            <label class="label_2" for="${rb_2_id}">${rb_2_text}</label>
                             <button class="menu_button" id="${button_id}" type="button">Проверить</button>
                         </div>
                     </div>`;
