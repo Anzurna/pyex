@@ -341,7 +341,7 @@ function loadPythonDataTypeTask() {
         "tuple": ["tuple"],
         "float": ["integer", "float"]
     };
-    let compatible_types_mul = { "integer": ["float", "integer", "string"],
+    let compatible_types_mul = { "integer": ["float", "integer", "string", "tuple"],
         "string": ["integer"],
         "list": ["integer"],
         "dict": ["none"],
@@ -438,14 +438,14 @@ function loadPCDT_1() {
         }
         first_var -= random_sub_2;
     }
-    if (first_var <= 0) {
+    if (first_var <= random_conditional_3) {
         result = "Finish,";
     }
     result += first_var.toString();
     console.log(result);
     addHintedRowWithInputAndButton("Ответ", "python_code_result_task_button", "python_code_result_input");
     GetId("python_code_result_task_button").onclick = function () {
-        if (GetId("python_code_result_input").value == result.replace(/\s/g, '')) {
+        if (GetId("python_code_result_input").value.replace(/\s/g, '') == result) {
             GetId("python_code_result_input").className = "input_element_correct";
             finishTask();
         }

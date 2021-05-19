@@ -383,7 +383,7 @@ function loadPythonDataTypeTask() {
                                   "tuple": ["tuple"],
                                   "float": ["integer", "float"]
     }
-    let compatible_types_mul = { "integer": ["float", "integer", "string"],
+    let compatible_types_mul = { "integer": ["float", "integer", "string", "tuple"],
                              "string": ["integer"],
                              "list":  ["integer"],
                              "dict":  ["none"],
@@ -444,10 +444,10 @@ function isOperationCorrect(first_op, second_op, types_array, compat_types) {
 }
 
 function loadPythonCodeResultTask() {
-    loadPCDT_1()
+    loadPCRT_1()
 }
 
-function loadPCDT_1() {
+function loadPCRT_1() {
     let first_var = getRandomNumber(150) + 70;
     let random_conditional_1 = getRandomNumber(70);
     let random_conditional_2 = getRandomNumber(3);
@@ -481,7 +481,7 @@ function loadPCDT_1() {
         }
         first_var -= random_sub_2
     }
-    if (first_var <= 0) {
+    if (first_var <= random_conditional_3) {
         result = "Finish,"
     }
     result += first_var.toString()
@@ -490,7 +490,7 @@ function loadPCDT_1() {
     addHintedRowWithInputAndButton("Ответ", "python_code_result_task_button", "python_code_result_input")
 
     GetId("python_code_result_task_button").onclick = function() {
-        if (GetId("python_code_result_input").value == result.replace(/\s/g, '')) {
+        if (GetId("python_code_result_input").value.replace(/\s/g, '') == result) {
             GetId("python_code_result_input").className = "input_element_correct";
            
             finishTask()
