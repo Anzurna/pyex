@@ -20,6 +20,21 @@ function toggleElementBetweenClasses(element, firstClass, secondClass) {
     element.classList.toggle(firstClass, true);
     element.classList.toggle(secondClass, false);
 }
+function genArrayWithUniqueNumbers(length, range_from, range_to) {
+    let iter = 0;
+    let array = [];
+    while (true) {
+        let random_number = getRandomNumber(range_to) + range_from;
+        if (!array.includes(random_number)) {
+            array.push(random_number);
+            iter++;
+        }
+        if (iter == length) {
+            break;
+        }
+    }
+    return array;
+}
 window.onload = function () {
     addMenuListeners();
     if (document.title == "Python exerciser") {
@@ -246,11 +261,12 @@ function formOriginalString() {
     original.insertAdjacentHTML("beforeend", quotation);
 }
 const BLOCKED_TASKS = new Set();
-const NUMBER_OF_PYTHON_TASKS = 2;
+const NUMBER_OF_PYTHON_TASKS = 3;
 function loadPythonTasksMenu() {
     createTextRow(`Выберите типы задач.`);
     addCheckboxRow("1", "Типы данных");
-    addCheckboxRow("2", "Результат выполнения кода");
+    addCheckboxRow("2", "Результат выполнения кода (while)");
+    addCheckboxRow("3", "Результат выполнения кода (for)");
     let elements = document.getElementsByClassName("menu_checkbox");
     for (let i = 0; i < elements.length; i++) {
         elements[i].value = i;
@@ -302,7 +318,10 @@ function selectPythonTask() {
                     loadPythonDataTypeTask();
                     break;
                 case "1":
-                    loadPythonCodeResultTask();
+                    loadPCRT_1();
+                    break;
+                case "2":
+                    loadPythonCodeResultTaskForLoop();
                     break;
             }
             break;
@@ -400,10 +419,18 @@ function isOperationCorrect(first_op, second_op, types_array, compat_types) {
         return "incorrect";
     }
 }
-function loadPythonCodeResultTask() {
-    loadPCDT_1();
+function loadPythonCodeResultTaskForLoop() {
+    let task_selector = getRandomNumber(2);
+    switch (task_selector) {
+        case 0:
+            loadPCRT_2();
+            break;
+        case 1:
+            loadPCRT_3();
+            break;
+    }
 }
-function loadPCDT_1() {
+function loadPCRT_1() {
     let first_var = getRandomNumber(150) + 70;
     let random_conditional_1 = getRandomNumber(70);
     let random_conditional_2 = getRandomNumber(3);
@@ -443,6 +470,118 @@ function loadPCDT_1() {
     }
     result += first_var.toString();
     console.log(result);
+    addHintedRowWithInputAndButton("Ответ", "python_code_result_task_button", "python_code_result_input");
+    GetId("python_code_result_task_button").onclick = function () {
+        if (GetId("python_code_result_input").value.replace(/\s/g, '') == result) {
+            GetId("python_code_result_input").className = "input_element_correct";
+            finishTask();
+        }
+        else {
+            GetId("python_code_result_input").className = "input_element_incorrect";
+        }
+    };
+}
+function loadPCRT_2() {
+    let k = getRandomNumber(7) + 1;
+    let m = getRandomNumber(12) + 1;
+    let s = getRandomNumber(45) + 10;
+    let loop_range = getRandomNumber(20) + 3;
+    let random_conditional_3 = getRandomNumber(15);
+    let cond_i = getRandomNumber(10) + 1;
+    let cond_k = getRandomNumber(7) + 1;
+    let cond_m = getRandomNumber(12) + 1;
+    let expr_1 = getRandomNumber(5) + 2;
+    let expr_3 = getRandomNumber(30) + 1;
+    let expr_4 = getRandomNumber(3) + 2;
+    let some_list = genArrayWithUniqueNumbers(10, 0, 100);
+    createTextRow(`Что выведет этот код?`);
+    createTextRow(`(Если ответов несколько - вводите их через запятую)`);
+    createTextRow(`
+    k = ${k}<br> 
+    m = ${m}<br>
+    s = ${s}<br>
+    some_list = [${some_list.toString().replace(/,/g, ", ")}]<br>
+    for i in range (0, ${loop_range}):<br>
+    &nbsp&nbsp&nbsp&nbspif i == ${cond_i} or k == ${cond_k} and m >= ${cond_m}:<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsps += ${expr_1}<br>
+    &nbsp&nbsp&nbsp&nbspif s > 0 and s in some_list:<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsps += k << 1<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspbreak<br>
+    &nbsp&nbsp&nbsp&nbsps += k + s // (m + 1) >> ${expr_3} % ${expr_4}<br>
+    &nbsp&nbsp&nbsp&nbspk, m = i, k<br>
+    else:<br>
+    &nbsp&nbsp&nbsp&nbspprint("Finish")<br>
+    print(s)`);
+    let result = "";
+    let i = 0;
+    for (i; i < loop_range; i++) {
+        if (i == cond_i || (k == cond_k && m >= cond_m)) {
+            s += expr_1;
+        }
+        if ((s > 0) && some_list.includes(s)) {
+            s += k << 1;
+            break;
+        }
+        s += (k + Math.floor(s / (m + 1))) >> (expr_3 % expr_4);
+        console.log("i = ", i, "Expr = ", s);
+        m = k;
+        k = i;
+    }
+    console.log(i);
+    if (i == loop_range) {
+        result = "Finish,";
+    }
+    result += s.toString();
+    console.log("Answer:", result);
+    addHintedRowWithInputAndButton("Ответ", "python_code_result_task_button", "python_code_result_input");
+    GetId("python_code_result_task_button").onclick = function () {
+        if (GetId("python_code_result_input").value.replace(/\s/g, '') == result) {
+            GetId("python_code_result_input").className = "input_element_correct";
+            finishTask();
+        }
+        else {
+            GetId("python_code_result_input").className = "input_element_incorrect";
+        }
+    };
+}
+function loadPCRT_3() {
+    let slice_start = getRandomNumber(3);
+    let slice_end = getRandomNumber(6) + slice_start + 1;
+    let monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    createTextRow(`Что выведет этот код?`);
+    createTextRow(`(Если ответов несколько - вводите их через запятую)`);
+    createTextRow(`
+    slice_start = ${slice_start}<br> 
+    slice_end = ${slice_end}<br>
+    month_names = ["${monthNames.slice(0, monthNames.length / 3).toString().replace(/,/g, '", "')}",<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
+    "${monthNames.slice(monthNames.length / 3, monthNames.length / 3 * 2).toString().replace(/,/g, '", "')}",<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
+    "${monthNames.slice(monthNames.length / 3 * 2, monthNames.length).toString().replace(/,/g, '", "')}"]<br>
+    result = ""<br>
+    prev_month_name_len = 0<br>
+    for month in month_names:<br>
+    &nbsp&nbsp&nbsp&nbspif len(month) < prev_month_name_len:<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspresult += month[1] + "_"<br>
+    &nbsp&nbsp&nbsp&nbspif len(month) > slice_start and len(month) >= slice_end:<br>
+    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspresult += month[slice_start:slice_end]<br>
+    &nbsp&nbsp&nbsp&nbspprev_month_name_len = len(month)<br>
+
+    print(result)`);
+    let result = "";
+    let i = 0;
+    let prev_month_name_len = 0;
+    for (let month of monthNames) {
+        if (month.length < prev_month_name_len) {
+            result += month[1] + "_";
+        }
+        if (month.length > slice_start && month.length >= slice_end) {
+            result += month.slice(slice_start, slice_end);
+        }
+        prev_month_name_len = month.length;
+    }
+    console.log("Answer:", result);
     addHintedRowWithInputAndButton("Ответ", "python_code_result_task_button", "python_code_result_input");
     GetId("python_code_result_task_button").onclick = function () {
         if (GetId("python_code_result_input").value.replace(/\s/g, '') == result) {
