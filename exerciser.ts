@@ -604,7 +604,6 @@ function loadPCRT_3() {
     let monthNames : string[] = [ 'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December' ];
     createTextRow(`Что выведет этот код?`);
-    createTextRow(`(Если ответов несколько - вводите их через запятую)`);
     createTextRow(`
     slice_start = ${slice_start}<br> 
     slice_end = ${slice_end}<br>
